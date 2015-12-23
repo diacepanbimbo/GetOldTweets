@@ -69,7 +69,38 @@ public class TweetManager {
 		
 		return response.toString();
 	}
-	
+	private static String getURLResponse(long userId) throws Exception {
+		
+		String url = String.format("https://twitter.com/i/profiles/popup?user_id=%s", URLEncoder.encode(String.valueOf(userId), "UTF-8"));
+		
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+ 
+		con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36");
+		con.setRequestMethod("GET");
+ 
+		BufferedReader in = new BufferedReader(
+		        new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+ 
+		while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
+		}
+		in.close();
+		
+		JSONObject json = new JSONObject(response.toString());
+		Document doc = Jsoup.parse((String) json.get("html"));
+		
+		//<a class="js-nav" href="/BarackObama/followers" data-element-term="follower_stats" data-nav="followers" data-is-compact="true"> <strong title="67.387.660" class="js-mini-profile-stat">67,4&nbsp;M</strong> </a></td> 
+	       
+		Elements cde= doc.select("div.u-floatLeft");
+		
+		Elements st2 = cde.get(0).getElementsByAttributeValue("data-nav", "followers");
+		String val = st2.get(0).select("strong").get(0).attr("title");
+		
+		return val;
+	}
 	/**
 	 * @param criteria An object of the class {@link TwitterCriteria} to indicate how tweets must be searched
 	 * 
@@ -92,6 +123,8 @@ public class TweetManager {
 			
 				for (Element tweet : tweets) {
 					String usernameTweet = tweet.select("span.username.js-action-profile-name b").text();
+					long userId= Long.valueOf(tweet.select("a.account-group.js-account-group.js-action-profile.js-user-profile-link.js-nav").attr("data-user-id"));
+					String numFollowers = getURLResponse(userId);
 					String txt = tweet.select("p.js-tweet-text").text().replaceAll("[^\\u0000-\\uFFFF]", "");
 					int retweets = Integer.valueOf(tweet.select("span.ProfileTweet-action--retweet span.ProfileTweet-actionCount").attr("data-tweet-stat-count").replaceAll(",", ""));
 					int favorites = Integer.valueOf(tweet.select("span.ProfileTweet-action--favorite span.ProfileTweet-actionCount").attr("data-tweet-stat-count").replaceAll(",", ""));
@@ -118,6 +151,7 @@ public class TweetManager {
 					t.setMentions(processMentions(txt));
 					t.setHashtags(processHashtags(txt));
 					t.setGeo(geo);
+					t.setFollowers(numFollowers);
 					
 					results.add(t);
 					
