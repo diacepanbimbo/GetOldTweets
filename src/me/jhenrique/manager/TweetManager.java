@@ -151,7 +151,7 @@ public class TweetManager {
 					t.setMentions(processMentions(txt));
 					t.setHashtags(processHashtags(txt));
 					t.setGeo(geo);
-					t.setFollowers(Long.valueOf(numFollowers.replace(".","")));
+					t.setFollowers(Long.valueOf(numFollowers.replace(".", "").replace(",", "")));
 					
 					results.add(t);
 					
