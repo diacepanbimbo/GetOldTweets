@@ -29,6 +29,8 @@ public class Tweet {
 	
 	private String geo;
 	
+	private String followers;
+	
 	public Tweet() {
 	}
 
@@ -110,6 +112,14 @@ public class Tweet {
 
 	public void setGeo(String geo) {
 		this.geo = geo;
+	}
+	
+	public String getFollowers() {
+		return followers;
+	}
+
+	public void setFollowers(String followers) {
+		this.followers = followers;
 	}
 	
 }
