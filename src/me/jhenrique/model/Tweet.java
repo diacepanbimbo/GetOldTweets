@@ -29,7 +29,7 @@ public class Tweet {
 	
 	private String geo;
 	
-	private String followers;
+	private long followers;
 	
 	public Tweet() {
 	}
@@ -114,11 +114,11 @@ public class Tweet {
 		this.geo = geo;
 	}
 	
-	public String getFollowers() {
+	public long getFollowers() {
 		return followers;
 	}
 
-	public void setFollowers(String followers) {
+	public void setFollowers(long followers) {
 		this.followers = followers;
 	}
 	
